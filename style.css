@@ -206,3 +206,108 @@ h4{
     font-size: 15px;
     font-family: "Sansation";
 }
+
+/*muziek pagina*/
+.music-content{
+    padding: 25px;
+}
+
+.schedule {
+  position: relative;
+  width: 1790px;
+  height: 320px; /* allow dynamic height */
+  background: #f5f5f5;
+  font-family: "Sansation";
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  left: 0;
+  width: 75px;
+  height: 80px;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  background: #fafafa;
+  padding-right: 80px;
+  background: transparent; /* 👈 THIS FIXES IT */
+  z-index: 2;
+}
+
+.event {
+  position: absolute;
+  height: 40px;
+  background: #2f7c95;
+  color: white;
+  border-radius: 20px;
+  padding: 10px 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event:hover {
+  background: #256272;
+}
+
+.day-switch {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+  font-family: 'Sansation';
+}
+
+.day-switch a {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  border-radius: 15px;
+  text-decoration: none;
+  background: #2f7c95;
+  color: white;
+  font-weight: bold;
+}
+
+.day-switch a.active {
+  background: black;
+}
+
+.timeline {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 2000px;
+  z-index: 5; /* 👈 IMPORTANT */
+}
+
+.time-label {
+  position: absolute;
+  font-size: 12px;
+  color: #2f7c95;
+  font-weight: bold;
+  z-index: 5;
+  padding-left: 175px;
+}
+
+.grid-line {
+  z-index: 1;
+}
+
+.event {
+  z-index: 3;
+}
+
+.timeline {
+  z-index: 4;
+}
+
+/* .stage-name {
+  transform: rotate(-90deg);
+  transform-origin: left top;
+} */
