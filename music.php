@@ -51,14 +51,14 @@ $stagesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 $stages = [];
-$top = 0;
+$rowIndex = 2; // row 1 = time header
 
 foreach ($stagesData as $stage) {
   $stages[$stage['id']] = [
     "name" => $stage['name'],
-    "top" => $top
+    "row" => $rowIndex
   ];
-  $top += 80;
+  $rowIndex++;
 }
 
 
@@ -79,48 +79,49 @@ $conn = null;
 </div>
 
 <div style="overflow-x: scroll;">
-  <div class="timeline">
-<?php
-for ($hour = 10; $hour <= 23; $hour++):
-  $left = ($hour - 10) * 60 * 2;
-?>
-  <div class="time-label" style="left: <?= $left ?>px;">
-    <?= sprintf('%02d:00', $hour) ?>
-  </div>
-<?php endfor; ?>
-</div>
   <div class="schedule">
+  <div class="grid-cell"></div>
 
-    <!-- Timeline -->
-     
+  <?php for ($h = 10; $h <= 23; $h++): ?>
+    <div class="time-header"><?= $h ?>:00</div>
+  <?php endfor; ?>
 
-    <!-- Stage rows -->
-    <?php foreach ($stages as $stage): ?>
-      <div class="stage" id="stage-name" style="top: <?= $stage['top'] ?>px;">
-        <?= $stage['name']?>
-      </div>
-    <?php endforeach; ?>
+  <?php foreach ($stages as $stage): ?>
+  <div class="stage-label"
+     style="grid-column: 1; grid-row: <?= $stage['row'] ?>;">
+    <?= $stage['name'] ?>
+  </div>
+
+  <?php for ($h = 10; $h <= 23; $h++): ?>
+    <div id="acts"></div>
+  <?php endfor; ?>
+<?php endforeach; ?>
 
     <!-- Events -->
-    <?php foreach ($acts as $act): 
-  $left = timeToPixels($act['start_time']);
-  $right = timeToPixels($act['end_time']);
-  $width = max(50, $right - $left);
+    <?php foreach ($acts as $act):
 
-  $top = isset($stages[$act['stage']]) 
-    ? $stages[$act['stage']]['top'] 
-    : 0;
+  $start = strtotime($act['start_time']);
+  $end   = strtotime($act['end_time']);
+
+  $startHour = (int)date("H", $start);
+  $endHour   = (int)date("H", $end);
+
+  /* GRID columns */
+  $colStart = ($startHour - 10) + 2;
+  $colEnd   = ($endHour - 10) + 2;
+
+  /* GRID row */
+  $row = $stages[$act['stage']]['row'];
+
 ?>
 
-  <div class="event"
-    style="
-      position:absolute;
-      left: <?= $left + 100 ?>px;
-      width: <?= $width ?>px;
-      top: <?= $top + 10 ?>px;
-    ">
-    <?= htmlspecialchars($act['naam']) ?>
-  </div>
+<div class="event"
+  style="
+    grid-column: <?= $colStart ?> / <?= $colEnd ?>;
+    grid-row: <?= $row ?>;
+  ">
+  <?= htmlspecialchars($act['naam']) ?>
+</div>
 
 <?php endforeach; ?>
 

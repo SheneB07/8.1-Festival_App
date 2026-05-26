@@ -109,7 +109,7 @@ h3{
 
 /*location.php*/
 #map-box{
-    width: 300px;
+    width: 80vw;
     height: 510px;
     border: solid 2px black;
     background-color: #3c824a;
@@ -210,20 +210,16 @@ h4{
 /*muziek pagina*/
 .music-content{
     padding: 25px;
+    font-family: 'Sansation';
 }
 
 .schedule {
-  position: relative;
-  width: 1790px;
-  height: 320px; /* allow dynamic height */
-  background: #f5f5f5;
-  font-family: "Sansation";
-  border-radius: 10px;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 120px repeat(14, 120px);
+  grid-auto-rows: 80px;
 }
 
 .stage {
-  position: absolute;
   left: 0;
   width: 75px;
   height: 80px;
@@ -240,16 +236,17 @@ h4{
 }
 
 .event {
-  position: absolute;
-  height: 40px;
+  display: flex;
   background: #2f7c95;
   color: white;
   border-radius: 20px;
-  padding: 10px 15px;
-  font-size: 14px;
-  display: flex;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+  justify-content: center;
+  text-align: center;
   align-items: center;
-  justify-content: space-between;
+  width: auto;
 }
 
 .event:hover {
@@ -279,7 +276,6 @@ h4{
 }
 
 .timeline {
-  position: absolute;
   top: 5px;
   left: 0;
   width: 2000px;
@@ -287,7 +283,6 @@ h4{
 }
 
 .time-label {
-  position: absolute;
   font-size: 12px;
   color: #2f7c95;
   font-weight: bold;
@@ -296,7 +291,7 @@ h4{
 }
 
 .grid-line {
-  z-index: 1;
+  z-index: 0;
 }
 
 .event {
@@ -307,7 +302,109 @@ h4{
   z-index: 4;
 }
 
+.time-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.stage-label {
+  font-weight: bold;
+  background: #fafafa;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+  z-index: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.grid-cell {
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #eee;
+}
+
+#acts{
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
 /* .stage-name {
   transform: rotate(-90deg);
   transform-origin: left top;
 } */
+
+/* CMS pagina */
+.cms-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    flex-direction: column;
+}
+
+h5{
+    font-family: 'Sansation';
+    font-size: 140%;
+}
+
+hr{
+    width: 75%;
+    height: 10%;
+    background-color: black;
+}
+
+.edit-container{
+    display: flex;
+    width: 100%;
+    padding: 5px;
+    flex-direction: row;
+}
+
+.buttons-container{
+    width: 17%;
+    height: auto;
+    background-color: #eee;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#option-button{
+    width: 80%;
+    height: auto;
+    background-color: #247BA0;
+    border-radius: 15px;
+    padding: 15px;
+    font-family: 'Sansation';
+    color: white;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 2px 2px 2px 2px #979797;
+}
+
+#option-button:hover{
+    cursor: pointer;
+    background-color: #256272;
+}
+
+h6{
+    font-family: 'Sansation';
+    font-size: 140%;
+    margin: 0px;
+    padding-bottom: 5px;
+}
+
+.option-container{
+    width: 100%;
+}
+
+.edit-information{
+    display: flex;
+    justify-content: center;
+    
+}
