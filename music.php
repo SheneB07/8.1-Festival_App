@@ -32,6 +32,8 @@ $stmt = $conn->prepare(" SELECT
     artists.omschrijving,
     artists.afbeelding,
     artists.video,
+    artists.tekst,
+    artists.id,
     stages.name AS stage_name
   FROM performances
   JOIN artists ON performances.artist_id = artists.id
@@ -68,6 +70,9 @@ $conn = null;
 <body>
 
 <?php include("includes/header.php"); ?>
+
+
+
 <div class="music-content">
 <div class="day-switch">
   <a href="?day=zaterdag" class="<?= $selectedDay == 'zaterdag' ? 'active' : '' ?>">
@@ -115,20 +120,80 @@ $conn = null;
 
 ?>
 
-<div class="event"
+<div class="event event-box"
+
+  data-id="<?= $act['id'] ?>"
+  data-name="<?= htmlspecialchars($act['naam']) ?>"
+  data-description="<?= htmlspecialchars($act['omschrijving']) ?>"
+  data-image="<?= htmlspecialchars($act['afbeelding']) ?>"
+  data-video="<?= htmlspecialchars($act['video']) ?>"
+  data-info="<?= htmlspecialchars($act['tekst']) ?>"
+
+
   style="
     grid-column: <?= $colStart ?> / <?= $colEnd ?>;
     grid-row: <?= $row ?>;
   ">
+  
   <?= htmlspecialchars($act['naam']) ?>
 </div>
 
+
+
 <?php endforeach; ?>
+
 
   </div>
 </div>
 </div>
+
+<div id="info-modal" class="modal">
+  <div id="modal-content">
+    
+  </div>
+</div>
+
+
 <?php include("includes/footer.php"); ?>
+
+<script>
+var modal = document.getElementById("info-modal");
+var modalContent = document.getElementById("modal-content");
+var boxes = document.querySelectorAll(".event-box");
+
+boxes.forEach(function(box) {
+
+  box.onclick = function() {
+
+    var id = box.dataset.id;
+    var name = box.dataset.name;
+    var description = box.dataset.description;
+    var image = box.dataset.image;
+    var video = box.dataset.video;
+    var info = box.dataset.info;
+
+    modalContent.innerHTML = `
+      
+
+      <img src="${image}" width="200">
+      <h6>${name}</h6>
+      <p>${description}</p>
+      <p>${info}</p>
+
+      
+    `;
+
+    modal.style.display = "block";
+  }
+
+});
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
 
 </body>
 </html>
