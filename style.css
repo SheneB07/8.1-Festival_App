@@ -402,10 +402,10 @@ hr{
     display: flex;
     width: 100%;
     padding: 5px;
-    flex-direction: row;
+    justify-content: center;
 }
 
-.buttons-container{
+#buttons-container{
     width: 17%;
     height: auto;
     background-color: #eee;
@@ -413,7 +413,6 @@ hr{
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     gap: 10px;
 }
@@ -447,8 +446,48 @@ h6{
     width: 100%;
 }
 
-.edit-information{
-    display: flex;
+#edit-information{
+    width: 100%;
+    display: none;
     justify-content: center;
-    
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
 }
+
+.cms-form{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.cms-form button{
+  width: auto;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  background-color: #F03228;
+  font-family: 'Sansation';
+  padding: 4%;
+}
+
+.cms-form input,
+.cms-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border-width: 1.5px;
+}
+
+label{
+  display: flex;
+  font-family: 'Sansation';
+  font-size: 100%;
+  color: #247BA0;
+  justify-content: center;
+}
+
+hr{
+  color: #b8b8b8;
+}
+

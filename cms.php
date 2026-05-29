@@ -50,14 +50,16 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h5>CMS</h5>
         <hr>
         <div class="edit-container">
-       <div class="buttons-container">
+        <div class="buttons-container" id="buttons-container">
         <h6>Bijwerken:</h6>
         <div id="option-button">Nieuws & meldingen</div>
-        <div id="option-button">Festival informatie</div>
-        <div id="option-button">Optredingen programma</div>
+        <div id="option-button" onclick="swapEdits()">Festival informatie</div>
+        <div id="option-button" onclick="swapEdits()">Optredingen programma</div>
         <div id="option-button">Map</div>
-       </div>
-       <div class="edit-information">
+        </div>
+
+        <!-- Edit Information page -->
+<div class="edit-information" id="edit-information">
 
 <h3>Festival informatie</h3>
 
@@ -71,7 +73,7 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
         value="<?= $info['id']; ?>"
     >
 
-    <label>Titel</label>
+    <label>Titel:</label>
 
     <input 
         type="text"
@@ -79,7 +81,7 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
         value="<?= htmlspecialchars($info['titel']); ?>"
     >
 
-    <label>Informatie</label>
+    <label>Informatie:</label>
 
     <textarea name="informatie"><?= htmlspecialchars($info['informatie']); ?></textarea>
 
@@ -92,8 +94,32 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php endforeach; ?>
 
 </div>
+
+        <!-- Edit programma page -->
+         <div class="edit-programma" id="edit-programma">
+
+         </div>
        </div>
     </div>
+
+    <script>
+        function swapEdits() {
+    const b1 = document.getElementById("buttons-container");
+    const b2 = document.getElementById("edit-information");
+    const b3 = document.getElementById("edit-programma");
+    
+     if (b1.style.display === "none") {
+        b1.style.display = "block";
+        b2.style.display = "none";
+        b3.style.display = "none";
+        
+    } else {
+        b1.style.display = "none";
+        b2.style.display = "flex";
+        b3.style.display = "none";
+}
+}
+    </script>
 
 </body>
 </html>
