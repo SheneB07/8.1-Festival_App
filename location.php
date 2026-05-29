@@ -6,6 +6,24 @@
     <link rel="stylesheet" href="style.css">  
 </head>
 <body>
+    <?php include("connection.php");
+    try {
+    // Prepare the query to select the name and description
+    $stmt = $conn->prepare("SELECT marker_id, x_coords, y_coords, img, width, types FROM markers");
+    $stmt->execute();
+
+    // Set the fetch mode to associative array
+    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    $markers = $stmt->fetchAll();  // This stores the result in the variable you use below
+
+    
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+$conn = null;
+    ?>
+
+
     <?php 
     include("includes/header.php");
     ?>
@@ -16,57 +34,73 @@
         <div id="map-inner">
             <img src="assets/map/map.svg" id="map">
         </div>
-
+        
         <div id="marker-layer">
-            <!-- number markers -->
-            <img src="assets/map/marker_1.svg"  class="marker" data-x="180" data-y="320">
-            <img src="assets/map/marker_2.svg"  class="marker" data-x="475" data-y="230">
-            <img src="assets/map/marker_3.svg"  class="marker" data-x="610" data-y="200">
-            <img src="assets/map/marker_4.svg"  class="marker" data-x="790" data-y="90">
 
-            <!-- bar markers -->
-            <img src="assets/map/marker_bar.svg"  class="marker" data-x="710" data-y="140" style="width: 20px">
-            <img src="assets/map/marker_bar.svg"  class="marker" data-x="630" data-y="150" style="width: 20px">
-            <img src="assets/map/marker_bar.svg"  class="marker" data-x="450" data-y="205" style="width: 20px">
-            <img src="assets/map/marker_bar.svg"  class="marker" data-x="100" data-y="375" style="width: 20px">
+        <!-- markers -->
+<?php foreach($markers as $marker) { ?>
 
-            <!-- entrance/exit marker -->
-            <img src="assets/map/marker_entrance_exit.svg"  class="marker" data-x="605" data-y="430" style="width: 70px">
+    <img 
+        src="<?= $marker['img']; ?>"
+        class="marker marker-box"
+        data-x="<?= $marker['x_coords']; ?>"
+        data-y="<?= $marker['y_coords']; ?>"
+        data-types="<?= htmlspecialchars($marker['types']) ?>"
+        style="width: <?= $marker['width']; ?>px;"
+        
+    >
+    
+<?php } ?>
+        
 
-            <!-- first aid marker -->
-            <img src="assets/map/marker_first_aid.svg"  class="marker" data-x="160" data-y="155" style="width: 20px">
-
-            <!-- food markers -->
-            <img src="assets/map/marker_food.svg"  class="marker" data-x="105" data-y="315" style="width: 20px">
-            <img src="assets/map/marker_food.svg"  class="marker" data-x="310" data-y="220" style="width: 20px">
-
-            <!-- ice cream markers -->
-            <img src="assets/map/marker_ice_cream.svg"  class="marker" data-x="230" data-y="340" style="width: 20px">
-            <img src="assets/map/marker_ice_cream.svg"  class="marker" data-x="350" data-y="200" style="width: 20px">
-            <img src="assets/map/marker_ice_cream.svg"  class="marker" data-x="545" data-y="170" style="width: 20px">
-            <img src="assets/map/marker_ice_cream.svg"  class="marker" data-x="730" data-y="85" style="width: 20px">
-
-            <!-- locker markers -->
-            <img src="assets/map/marker_locker.svg"  class="marker" data-x="210" data-y="415" style="width: 25px">
-            <img src="assets/map/marker_locker.svg"  class="marker" data-x="265" data-y="415" style="width: 25px">
-
-            <!-- merchandise markers -->
-            <img src="assets/map/marker_merchandise.svg"  class="marker" data-x="150" data-y="400" style="width: 20px">
-            <img src="assets/map/marker_merchandise.svg"  class="marker" data-x="280" data-y="200" style="width: 20px">
-            <img src="assets/map/marker_merchandise.svg"  class="marker" data-x="570" data-y="210" style="width: 20px">
-
-            <!-- toilet markers -->
-            <img src="assets/map/marker_toilet.svg"  class="marker" data-x="70" data-y="400" style="width: 20px">
-            <img src="assets/map/marker_toilet.svg"  class="marker" data-x="430" data-y="140" style="width: 20px">
-            <img src="assets/map/marker_toilet.svg"  class="marker" data-x="815" data-y="130" style="width: 20px">
+            
             </div>
         </div>
     </div>
+
+    <div id="info-modal" class="modal">
+  <div id="modal-content">
+    
+  </div>
+</div>
 
     <?php 
     include("includes/footer.php");
     ?>
 
     <script src="map.js"></script>
+
+<script>
+var modal = document.getElementById("info-modal");
+var modalContent = document.getElementById("modal-content");
+var boxes = document.querySelectorAll(".marker-box");
+
+boxes.forEach(function(box) {
+
+  box.onclick = function() {
+
+    var types = box.dataset.types;
+
+    
+
+    modalContent.innerHTML = `
+      
+
+      <p>${types}</p>
+
+      
+    `;
+
+    modal.style.display = "block";
+  }
+
+});
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
 </body>
 </html>
