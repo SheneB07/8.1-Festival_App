@@ -98,7 +98,7 @@ $conn = null;
   </div>
 
   <?php for ($h = 10; $h <= 23; $h++): ?>
-    <div id="acts"></div>
+    
   <?php endfor; ?>
 <?php endforeach; ?>
 

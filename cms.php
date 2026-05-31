@@ -46,7 +46,7 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php include("includes/header.php"); ?>
 
-    <div class="cms-content">
+    <!-- <div class="cms-content">
         <h5>CMS</h5>
         <hr>
         <div class="edit-container">
@@ -56,7 +56,7 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div id="option-button" onclick="swapEdits()">Festival informatie</div>
         <div id="option-button" onclick="swapEdits()">Optredingen programma</div>
         <div id="option-button">Map</div>
-        </div>
+        </div> -->
 
         <!-- Edit Information page -->
 <div class="edit-information" id="edit-information">
@@ -96,10 +96,49 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
         <!-- Edit programma page -->
-         <div class="edit-programma" id="edit-programma">
+         <div class="edit-map" id="edit-map">
+             <img src="assets/map/map.svg" id="cms-map">
 
+        <div id="marker-layer">
+            <!-- markers here -->
+        </div>
+
+  
+
+    <div class="marker-form">
+
+        <form action="save-marker.php" method="POST">
+
+            <input type="hidden" name="marker_id">
+
+            <label>Title</label>
+            <input type="text" name="title">
+
+            <label>Description</label>
+            <textarea name="description"></textarea>
+
+            <label>X Position</label>
+            <input type="number" name="x_coords">
+
+            <label>Y Position</label>
+            <input type="number" name="y_coords">
+
+            <label>Image</label>
+            <input type="text" name="img">
+
+            <label>Width</label>
+            <input type="number" name="width">
+
+            <button type="submit">
+                Save Marker
+            </button>
+
+        </form>
+
+    </div>
          </div>
        </div>
+
     </div>
 
     <script>
@@ -118,8 +157,28 @@ $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
         b2.style.display = "flex";
         b3.style.display = "none";
 }
-}
+};
+
+
+const map = document.getElementById("cms-map");
+
+map.addEventListener("click", function(e){
+
+    const rect = map.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    document.querySelector('[name="x_coords"]').value =
+        Math.round(x);
+
+    document.querySelector('[name="y_coords"]').value =
+        Math.round(y);
+
+});
+
     </script>
+
 
 </body>
 </html>
