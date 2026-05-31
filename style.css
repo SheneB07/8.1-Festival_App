@@ -151,7 +151,7 @@ h3{
     font-family: 'Sansation';
 }
 
-#welcome-box{
+/* #welcome-box{
     display: flex;
     width: 250px;
     height: 100px;
@@ -159,15 +159,18 @@ h3{
     align-items: center;
     text-align: center;
     padding: 10px;
-    border-radius: 10px;
-}
+    border-radius: 8px;
+} */
 
 #information-box{
+    display: flex;
     width: 250px;
     height: 100px;
     border: solid 2px black;
+    align-items: center;
+    text-align: center;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 /*location.php*/
@@ -434,6 +437,7 @@ h4{
   margin: 10% auto;
   padding: 20px;
   width: 65%;
+  height: 50%;
   border-radius: 10px;
   position: absolute;
   top: 46%;
@@ -442,6 +446,7 @@ h4{
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: scroll;
 }
 
 /* Close button */
@@ -473,16 +478,29 @@ h4{
     flex-direction: column;
 }
 
+.cms-section{
+    display:none;
+}
+
+.cms-menu{
+    display:block;
+}
+
+.back-btn{
+    margin-bottom:20px;
+    cursor:pointer;
+}
+
 h5{
     font-family: 'Sansation';
     font-size: 140%;
 }
 
-hr{
+/* hr{
     width: 75%;
     height: 10%;
     background-color: black;
-}
+} */
 
 .edit-container{
     display: flex;
@@ -492,7 +510,7 @@ hr{
 }
 
 #buttons-container{
-    width: 17%;
+    width: 85%;
     height: auto;
     background-color: #eee;
     border-radius: 15px;

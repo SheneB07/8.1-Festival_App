@@ -1,106 +1,154 @@
+<?php
+include("connection.php");
+
+/*
+|--------------------------------------------------------------------------
+| Load markers
+|--------------------------------------------------------------------------
+*/
+try {
+
+    $stmt = $conn->prepare("
+        SELECT
+            marker_id,
+            stage_id,
+            x_coords,
+            y_coords,
+            img,
+            width,
+            types
+        FROM markers
+    ");
+
+    $stmt->execute();
+
+    $markers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+
+    die("Marker error: " . $e->getMessage());
+
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">  
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <?php include("connection.php");
-    try {
-    // Prepare the query to select the name and description
-    $stmt = $conn->prepare("SELECT marker_id, x_coords, y_coords, img, width, types FROM markers");
-    $stmt->execute();
 
-    // Set the fetch mode to associative array
-    $stmt->setFetchMode(PDO::FETCH_ASSOC);
-    $markers = $stmt->fetchAll();  // This stores the result in the variable you use below
+<?php include("includes/header.php"); ?>
 
-    
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-}
-$conn = null;
-    ?>
+<div class="content">
 
-
-    <?php 
-    include("includes/header.php");
-    ?>
-
-    <div class="content">
-        <div id="map-box">
+    <div id="map-box">
 
         <div id="map-inner">
             <img src="assets/map/map.svg" id="map">
         </div>
-        
+
         <div id="marker-layer">
 
-        <!-- markers -->
-<?php foreach($markers as $marker) { ?>
+            <?php foreach($markers as $marker): ?>
 
-    <img 
-        src="<?= $marker['img']; ?>"
-        class="marker marker-box"
-        data-x="<?= $marker['x_coords']; ?>"
-        data-y="<?= $marker['y_coords']; ?>"
-        data-types="<?= htmlspecialchars($marker['types']) ?>"
-        style="width: <?= $marker['width']; ?>px;"
-        
-    >
-    
-<?php } ?>
-        
+                <img
+                    src="<?= htmlspecialchars($marker['img']) ?>"
+                    class="marker marker-box"
+                    data-stage="<?= $marker['stage_id'] ?>"
+                    data-x="<?= $marker['x_coords'] ?>"
+                    data-y="<?= $marker['y_coords'] ?>"
+                    style="width: <?= $marker['width'] ?>px;"
+                >
 
-            
-            </div>
+            <?php endforeach; ?>
+
         </div>
+
     </div>
 
-    <div id="info-modal" class="modal">
-  <div id="modal-content">
-    
-  </div>
 </div>
 
-    <?php 
-    include("includes/footer.php");
-    ?>
+<div id="info-modal" class="modal">
+    <div id="modal-content"></div>
+</div>
 
-    <script src="map.js"></script>
+<?php include("includes/footer.php"); ?>
+
+<script src="map.js"></script>
 
 <script>
-var modal = document.getElementById("info-modal");
-var modalContent = document.getElementById("modal-content");
-var boxes = document.querySelectorAll(".marker-box");
 
-boxes.forEach(function(box) {
+const modal = document.getElementById("info-modal");
+const modalContent = document.getElementById("modal-content");
 
-  box.onclick = function() {
+document.querySelectorAll(".marker-box").forEach(box => {
 
-    var types = box.dataset.types;
+    box.addEventListener("click", async () => {
 
-    
+        const stageId = box.dataset.stage;
 
-    modalContent.innerHTML = `
-      
+        try {
 
-      <p>${types}</p>
+            const response = await fetch(
+                "getStageSchedule.php?id=" + stageId
+            );
 
-      
-    `;
+            const data = await response.json();
 
-    modal.style.display = "block";
-  }
+            let html = "<h3>Stage Schedule</h3>";
+
+            if(data.length === 0){
+
+                html += "<p>No performances found.</p>";
+
+            } else {
+
+                data.forEach(show => {
+
+                    html += `
+                        <div class="show-item">
+                            <strong>${show.day}</strong><br>
+                            ${show.start} - ${show.end}<br>
+                            ${show.artist}
+                        </div>
+                        <hr>
+                    `;
+
+                });
+
+            }
+
+            modalContent.innerHTML = html;
+            modal.style.display = "block";
+
+        } catch(error) {
+
+            console.error(error);
+
+            modalContent.innerHTML =
+                "<p>Error loading schedule.</p>";
+
+            modal.style.display = "block";
+
+        }
+
+    });
 
 });
 
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
+window.addEventListener("click", e => {
+
+    if(e.target === modal){
+
+        modal.style.display = "none";
+
+    }
+
+});
+
 </script>
+
 </body>
 </html>

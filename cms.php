@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <?php
@@ -43,142 +43,168 @@ $stmt->execute();
 $informatie = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
+    <?php include("includes/header.php"); ?>
+    <div class="cms-content">
 
-<?php include("includes/header.php"); ?>
-
-    <!-- <div class="cms-content">
+    <!-- MENU -->
+     <div class="cms-content">
         <h5>CMS</h5>
         <hr>
         <div class="edit-container">
         <div class="buttons-container" id="buttons-container">
         <h6>Bijwerken:</h6>
-        <div id="option-button">Nieuws & meldingen</div>
-        <div id="option-button" onclick="swapEdits()">Festival informatie</div>
-        <div id="option-button" onclick="swapEdits()">Optredingen programma</div>
-        <div id="option-button">Map</div>
-        </div> -->
-
-        <!-- Edit Information page -->
-<div class="edit-information" id="edit-information">
-
-<h3>Festival informatie</h3>
-
-<?php foreach($informatie as $info): ?>
-
-<form method="POST" class="cms-form">
-
-    <input 
-        type="hidden"
-        name="id"
-        value="<?= $info['id']; ?>"
-    >
-
-    <label>Titel:</label>
-
-    <input 
-        type="text"
-        name="titel"
-        value="<?= htmlspecialchars($info['titel']); ?>"
-    >
-
-    <label>Informatie:</label>
-
-    <textarea name="informatie"><?= htmlspecialchars($info['informatie']); ?></textarea>
-
-    <button type="submit">Opslaan</button>
-
-</form>
-
-<hr>
-
-<?php endforeach; ?>
-
-</div>
-
-        <!-- Edit programma page -->
-         <div class="edit-map" id="edit-map">
-             <img src="assets/map/map.svg" id="cms-map">
-
-        <div id="marker-layer">
-            <!-- markers here -->
+        <div id="option-button" onclick="showSection('edit-news')">Nieuws & meldingen</div>
+        <div id="option-button" onclick="showSection('edit-information')">Festival informatie</div>
+        <div id="option-button" onclick="showSection('edit-programma')">Optredingen programma</div>
+        <div id="option-button" onclick="showSection('edit-map')">Map</div>
         </div>
 
-  
 
-    <div class="marker-form">
+    <!-- INFORMATION -->
+    <div id="edit-information" class="cms-section">
 
-        <form action="save-marker.php" method="POST">
+        <button class="back-btn" onclick="showMenu()">
+            ← Terug
+        </button>
 
-            <input type="hidden" name="marker_id">
+        <h3>Festival Informatie</h3>
 
-            <label>Title</label>
-            <input type="text" name="title">
+        <?php foreach($informatie as $info): ?>
 
-            <label>Description</label>
-            <textarea name="description"></textarea>
+        <form method="POST" class="cms-form">
 
-            <label>X Position</label>
-            <input type="number" name="x_coords">
+            <input
+                type="hidden"
+                name="id"
+                value="<?= $info['id']; ?>"
+            >
 
-            <label>Y Position</label>
-            <input type="number" name="y_coords">
+            <label>Titel</label>
 
-            <label>Image</label>
-            <input type="text" name="img">
+            <input
+                type="text"
+                name="titel"
+                value="<?= htmlspecialchars($info['titel']); ?>"
+            >
 
-            <label>Width</label>
-            <input type="number" name="width">
+            <label>Informatie</label>
 
-            <button type="submit">
-                Save Marker
-            </button>
+            <textarea name="informatie"><?= htmlspecialchars($info['informatie']); ?></textarea>
+
+            <button type="submit">Opslaan</button>
 
         </form>
 
-    </div>
-         </div>
-       </div>
+        <hr>
+
+        <?php endforeach; ?>
 
     </div>
 
-    <script>
-        function swapEdits() {
-    const b1 = document.getElementById("buttons-container");
-    const b2 = document.getElementById("edit-information");
-    const b3 = document.getElementById("edit-programma");
-    
-     if (b1.style.display === "none") {
-        b1.style.display = "block";
-        b2.style.display = "none";
-        b3.style.display = "none";
+
+    <!-- NEWS -->
+    <div id="edit-news" class="cms-section">
+
+        <button class="back-btn" onclick="showMenu()">
+            ← Terug
+        </button>
+
+        <h3>Nieuws & Meldingen</h3>
+
         
-    } else {
-        b1.style.display = "none";
-        b2.style.display = "flex";
-        b3.style.display = "none";
-}
-};
+
+    </div>
 
 
-const map = document.getElementById("cms-map");
+    <!-- PROGRAMMA -->
+    <div id="edit-programma" class="cms-section">
 
-map.addEventListener("click", function(e){
+        <button class="back-btn" onclick="showMenu()">
+            ← Terug
+        </button>
 
-    const rect = map.getBoundingClientRect();
+        <h3>Programma</h3>
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+        <!-- Add your programme CMS here -->
 
-    document.querySelector('[name="x_coords"]').value =
-        Math.round(x);
-
-    document.querySelector('[name="y_coords"]').value =
-        Math.round(y);
-
-});
-
-    </script>
+    </div>
 
 
+    <!-- MAP -->
+    <div id="edit-map" class="cms-section">
+
+        <button class="back-btn" onclick="showMenu()">
+            ← Terug
+        </button>
+
+        <h3>Festival Map</h3>
+
+        <img src="assets/map/map.svg" id="cms-map">
+
+        <div id="marker-layer">
+            <!-- markers -->
+        </div>
+
+        <div class="marker-form">
+
+            <form action="save-marker.php" method="POST">
+
+                <input type="hidden" name="marker_id">
+
+                <label>Title</label>
+                <input type="text" name="title">
+
+                <label>Description</label>
+                <textarea name="description"></textarea>
+
+                <label>X Position</label>
+                <input type="number" name="x_coords">
+
+                <label>Y Position</label>
+                <input type="number" name="y_coords">
+
+                <label>Image</label>
+                <input type="text" name="img">
+
+                <label>Width</label>
+                <input type="number" name="width">
+
+                <button type="submit">
+                    Save Marker
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
+
+
+<script>
+    const sections = document.querySelectorAll(".cms-section");
+const menu = document.getElementById("buttons-container");
+
+function showSection(sectionId){
+
+    menu.style.display = "none";
+
+    sections.forEach(section => {
+        section.style.display = "none";
+    });
+
+    document.getElementById(sectionId).style.display = "block";
+}
+
+function showMenu(){
+
+    sections.forEach(section => {
+        section.style.display = "none";
+    });
+
+    menu.style.display = "block";
+}
+</script>
