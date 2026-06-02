@@ -139,6 +139,10 @@ $conn = null;
   data-description-nl="<?= htmlspecialchars($act['omschrijving']) ?>"
   data-description-en="<?= htmlspecialchars($act['omschrijving_en']) ?>"
 
+  data-start="<?= date('H:i', strtotime($act['start_time'])) ?>"
+  data-end="<?= date('H:i', strtotime($act['end_time'])) ?>"
+
+
   data-info-nl="<?= htmlspecialchars($act['tekst']) ?>"
   data-info-en="<?= htmlspecialchars($act['tekst_en']) ?>"
 
@@ -182,27 +186,44 @@ boxes.forEach(function(box) {
 
   box.onclick = function() {
 
-    const name = currentLanguage === "nl"
-        ? box.dataset.nameNl
-        : box.dataset.nameEn;
+  const name = currentLanguage === "nl"
+      ? box.dataset.nameNl
+      : box.dataset.nameEn;
 
-    const description = currentLanguage === "nl"
-        ? box.dataset.descriptionNl
-        : box.dataset.descriptionEn;
+  const description = currentLanguage === "nl"
+      ? box.dataset.descriptionNl
+      : box.dataset.descriptionEn;
 
-    const info = currentLanguage === "nl"
-        ? box.dataset.infoNl
-        : box.dataset.infoEn;
+  const info = currentLanguage === "nl"
+      ? box.dataset.infoNl
+      : box.dataset.infoEn;
 
-    modalContent.innerHTML = `
-      <img src="${box.dataset.image}" class="modal-image">
-      <h6>${name}</h6>
-      <p>${description}</p>
-      <p>${info}</p>
-    `;
+  const imageHtml = box.dataset.image
+      ? `<img src="${box.dataset.image}" class="modal-image">`
+      : '';
 
-    modal.style.display = "block";
-  };
+  modalContent.innerHTML = `
+    ${imageHtml}
+
+    <div class="modal-body">
+      <h3 class="artist-title">${name}</h3>
+
+      <p class="artist-description">
+        ${description}
+      </p>
+
+      <div class="artist-time">
+      ${box.dataset.start} - ${box.dataset.end}
+      </div>
+
+      <div class="artist-info">
+        ${info}
+      </div>
+    </div>
+  `;
+
+  modal.style.display = "block";
+};
 
 });
 

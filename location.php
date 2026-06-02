@@ -9,16 +9,23 @@ include("connection.php");
 try {
 
     $stmt = $conn->prepare("
-        SELECT
-            marker_id,
-            stage_id,
-            x_coords,
-            y_coords,
-            img,
-            width,
-            types
-        FROM markers
-    ");
+    SELECT
+        markers.marker_id,
+        markers.stage_id,
+        markers.x_coords,
+        markers.y_coords,
+        markers.img,
+        markers.width,
+        markers.types,
+
+        stages.name AS stage_name,
+        stages.stage_image AS stage_image
+
+    FROM markers
+
+    LEFT JOIN stages
+        ON markers.stage_id = stages.id
+");
 
     $stmt->execute();
 
@@ -56,7 +63,12 @@ try {
                 <img
                     src="<?= htmlspecialchars($marker['img']) ?>"
                     class="marker marker-box"
+
                     data-stage="<?= $marker['stage_id'] ?>"
+                    data-stage-name="<?= htmlspecialchars($marker['stage_name']) ?>"
+                    data-stage-image="<?= htmlspecialchars($marker['stage_image']) ?>"
+
+                    data-type="<?= htmlspecialchars($marker['types']) ?>"
                     data-x="<?= $marker['x_coords'] ?>"
                     data-y="<?= $marker['y_coords'] ?>"
                     style="width: <?= $marker['width'] ?>px;"
@@ -70,8 +82,8 @@ try {
 
 </div>
 
-<div id="map-modal" class="modal">
-    <div id="modal-content"></div>
+<div id="map-modal" class="map-modal">
+    <div id="map-modal-content"></div>
 </div>
 
 <?php include("includes/footer.php"); ?>
@@ -81,7 +93,7 @@ try {
 <script>
 
 const modal = document.getElementById("map-modal");
-const modalContent = document.getElementById("modal-content");
+const mapModalContent = document.getElementById("map-modal-content");
 
 
 function translateDay(day) {
@@ -108,68 +120,118 @@ document.querySelectorAll(".marker-box").forEach(box => {
 
     box.addEventListener("click", async () => {
 
-        const stageId = box.dataset.stage;
+    const type = box.dataset.type;
+    const stageId = box.dataset.stage;
+    const stageName = box.dataset.stageName;
+    const stageImage = box.dataset.stageImage;
 
-        try {
+    let html = "";
 
-            const response = await fetch(
-                "getStageSchedule.php?id=" + stageId
-            );
+    // -------------------------
+    // NON-STAGE MARKERS
+    // -------------------------
+    if (type !== "stage") {
 
-            const data = await response.json();
+        switch (type) {
 
-            let html = `<h3>${
-            currentLanguage === "en"
-            ? "Stage Schedule"
-            : "Podiumschema"
-            }</h3>`;
+            case "toilet":
+                html = `
+                    <h3>${currentLanguage === "en" ? "Toilets" : "Toiletten"}</h3>
+                    <p>${currentLanguage === "en"
+                        ? "Restrooms available here."
+                        : "Toiletten beschikbaar hier."}
+                    </p>
+                `;
+                break;
 
-            if(data.length === 0){
+            case "food":
+                html = `
+                    <h3>${currentLanguage === "en" ? "Food" : "Eten"}</h3>
+                    <p>${currentLanguage === "en"
+                        ? "Food stands located here."
+                        : "Eetkraampjes hier."}
+                    </p>
+                `;
+                break;
 
-                html += `<p>${
-                currentLanguage === "en"
-                ? "No performances found."
-                : "Geen optredens gevonden."
-                }</p>`;
+            case "info":
+                html = `
+                    <h3>${currentLanguage === "en" ? "Info Point" : "Informatiepunt"}</h3>
+                    <p>${currentLanguage === "en"
+                        ? "Get help and information here."
+                        : "Hier kun je informatie krijgen."}
+                    </p>
+                `;
+                break;
 
-            } else {
-
-                data.forEach(show => {
-
-                    html += `
-                        <div class="show-item">
-                            <strong>${translateDay(show.day)}</strong><br>
-                            ${show.start} - ${show.end}<br>
-                            ${show.artist}
-                        </div>
-                        <hr>
-                    `;
-
-                });
-
-            }
-
-            modalContent.innerHTML = html;
-            modal.style.display = "block";
-
-            
-
-        } catch(error) {
-
-            console.error(error);
-
-            modalContent.innerHTML =
-    `   <p>${
-        currentLanguage === "en"
-            ? "Error loading schedule."
-            : "Fout bij laden van het schema."
-        }</p>`;
-
-            modal.style.display = "block";
-
+            default:
+                html = `<h3>${type}</h3>`;
         }
 
-    });
+        mapModalContent.innerHTML = html;
+        modal.style.display = "block";
+        return; // 🔥 THIS WAS MISSING (prevents overwrite bug)
+    }
+
+    // -------------------------
+    // STAGE MARKERS ONLY
+    // -------------------------
+    try {
+
+        const response = await fetch("getStageSchedule.php?id=" + stageId);
+        const data = await response.json();
+
+        html = "";
+
+        if (stageImage) {
+            html += `<img src="${stageImage}" class="stage-image">`;
+        }
+
+        html += `
+            <h2 class="stage-title">${stageName}</h2>
+            <h3>${currentLanguage === "en" ? "Stage Schedule" : "Podiumschema"}</h3>
+        `;
+
+        if (data.length === 0) {
+            html += `<p>${currentLanguage === "en"
+                ? "No performances found."
+                : "Geen optredens gevonden."
+            }</p>`;
+        } else {
+            data.forEach(show => {
+                html += `
+                    <div class="show-item">
+                        <div class="show-day">
+                            ${translateDay(show.day)}
+                        </div>
+
+                        <div class="show-time">
+                            ${show.start} - ${show.end}
+                        </div>
+
+                        <div class="show-artist">
+                            ${show.artist}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        mapModalContent.innerHTML = html;
+        modal.style.display = "block";
+
+    } catch (error) {
+        console.error(error);
+
+        mapModalContent.innerHTML = `<p>${
+            currentLanguage === "en"
+                ? "Error loading schedule."
+                : "Fout bij laden van het schema."
+        }</p>`;
+
+        modal.style.display = "block";
+    }
+});
 
 });
 

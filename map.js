@@ -7,24 +7,30 @@ let posY = 0;
 let isDragging = false;
 let startX, startY;
 
-// DRAG
-mapInner.addEventListener("mousedown", (e) => {
+mapInner.addEventListener("pointerdown", (e) => {
     isDragging = true;
+
     startX = e.clientX - posX;
     startY = e.clientY - posY;
+
+    mapInner.setPointerCapture(e.pointerId);
 });
 
-window.addEventListener("mouseup", () => {
-    isDragging = false;
-});
-
-window.addEventListener("mousemove", (e) => {
+mapInner.addEventListener("pointermove", (e) => {
     if (!isDragging) return;
 
     posX = e.clientX - startX;
     posY = e.clientY - startY;
 
     updateTransform();
+});
+
+mapInner.addEventListener("pointerup", () => {
+    isDragging = false;
+});
+
+mapInner.addEventListener("pointercancel", () => {
+    isDragging = false;
 });
 
 // ZOOM
