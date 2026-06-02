@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Festival Music & Schedule</title>
+    <meta name="description" content="Festival artist schedule by day and stage">    <link rel="stylesheet" href="style.css">  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a74da">
 </head>
 <?php 
 $selectedDay = $_GET['day'] ?? 'zaterdag';

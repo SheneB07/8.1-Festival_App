@@ -1,11 +1,6 @@
 <?php
 include("connection.php");
 
-/*
-|--------------------------------------------------------------------------
-| Load markers
-|--------------------------------------------------------------------------
-*/
 try {
 
     $stmt = $conn->prepare("
@@ -42,14 +37,18 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festival Map - Location</title>
+    <meta name="description" content="Festival map overview with venue locations and facilities">
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a74da">
 </head>
 <body>
 
 <?php include("includes/header.php"); ?>
 
 <div class="content">
-    <button id="locate-btn" class="locate-btn">Locate me</button>
+    <!-- <button id="locate-btn" class="locate-btn">Locate me</button> -->
     <div id="map-box">
 
     

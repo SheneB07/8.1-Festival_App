@@ -4,3 +4,13 @@
         <a href="music.php"><img src="assets/music-icon.png" id="music-icon"></a>
         <a href="location.php"><img src="assets/location-icon.png" id="location-icon"></a>
     </footer>
+
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function() { console.log('Service Worker registered'); })
+                    .catch(function(err) { console.error('SW registration failed:', err); });
+            });
+        }
+        </script>
