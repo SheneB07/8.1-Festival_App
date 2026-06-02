@@ -188,6 +188,17 @@ $conn = null;
     <div id="edit-information" class="cms-section">
         <button class="back-btn" onclick="showMenu()">← Terug</button>
         <h3>Festival Informatie</h3>
+        <div class="cms-box cms-add">
+            <h4>Nieuwe informatie toevoegen</h4>
+            <form method="POST" class="cms-form">
+                <input type="hidden" name="action" value="add_information">
+                <label>Titel</label>
+                <input type="text" name="titel" placeholder="Titel">
+                <label>Informatie</label>
+                <textarea name="informatie" placeholder="Informatie tekst"></textarea>
+                <button type="submit">Toevoegen</button>
+            </form>
+        </div>
         <?php foreach ($informationItems as $info): ?>
             <form method="POST" class="cms-form">
                 <input type="hidden" name="action" value="save_information">
@@ -202,23 +213,20 @@ $conn = null;
                 </div>
             </form>
         <?php endforeach; ?>
-
-        <div class="cms-box">
-            <h4>Nieuwe informatie toevoegen</h4>
-            <form method="POST" class="cms-form">
-                <input type="hidden" name="action" value="add_information">
-                <label>Titel</label>
-                <input type="text" name="titel" placeholder="Titel">
-                <label>Informatie</label>
-                <textarea name="informatie" placeholder="Informatie tekst"></textarea>
-                <button type="submit">Toevoegen</button>
-            </form>
-        </div>
     </div>
 
     <div id="edit-news" class="cms-section">
         <button class="back-btn" onclick="showMenu()">← Terug</button>
         <h3>Nieuws & Meldingen</h3>
+        <div class="cms-box cms-add">
+            <h4>Nieuwe melding toevoegen</h4>
+            <form method="POST" class="cms-form">
+                <input type="hidden" name="action" value="add_news">
+                <label>Nieuws</label>
+                <textarea name="information" placeholder="Nieuwe melding"></textarea>
+                <button type="submit">Toevoegen</button>
+            </form>
+        </div>
         <?php foreach ($newsItems as $item): ?>
             <form method="POST" class="cms-form">
                 <input type="hidden" name="action" value="save_news">
@@ -231,21 +239,39 @@ $conn = null;
                 </div>
             </form>
         <?php endforeach; ?>
-
-        <div class="cms-box">
-            <h4>Nieuwe melding toevoegen</h4>
-            <form method="POST" class="cms-form">
-                <input type="hidden" name="action" value="add_news">
-                <label>Nieuws</label>
-                <textarea name="information" placeholder="Nieuwe melding"></textarea>
-                <button type="submit">Toevoegen</button>
-            </form>
-        </div>
     </div>
 
     <div id="edit-programma" class="cms-section">
         <button class="back-btn" onclick="showMenu()">← Terug</button>
         <h3>Optredingen programma</h3>
+        <div class="cms-box cms-add">
+            <h4>Nieuwe optreden toevoegen</h4>
+            <form method="POST" class="cms-form">
+                <input type="hidden" name="action" value="add_performance">
+                <label>Dag</label>
+                <select name="day">
+                    <option value="zaterdag">Zaterdag</option>
+                    <option value="zondag">Zondag</option>
+                </select>
+                <label>Stage</label>
+                <select name="stage">
+                    <?php foreach ($stages as $stage): ?>
+                        <option value="<?= $stage['id'] ?>"><?= htmlspecialchars($stage['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <label>Act</label>
+                <select name="artist_id">
+                    <?php foreach ($artists as $artist): ?>
+                        <option value="<?= $artist['id'] ?>"><?= htmlspecialchars($artist['naam']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <label>Start</label>
+                <input type="time" name="start" value="10:00">
+                <label>Eind</label>
+                <input type="time" name="end" value="11:00">
+                <button type="submit">Toevoegen</button>
+            </form>
+        </div>
         <?php foreach ($performances as $performance): ?>
             <form method="POST" class="cms-form">
                 <input type="hidden" name="action" value="save_performance">
@@ -277,41 +303,43 @@ $conn = null;
                 </div>
             </form>
         <?php endforeach; ?>
-
-        <div class="cms-box">
-            <h4>Nieuwe optreden toevoegen</h4>
-            <form method="POST" class="cms-form">
-                <input type="hidden" name="action" value="add_performance">
-                <label>Dag</label>
-                <select name="day">
-                    <option value="zaterdag">Zaterdag</option>
-                    <option value="zondag">Zondag</option>
-                </select>
-                <label>Stage</label>
-                <select name="stage">
-                    <?php foreach ($stages as $stage): ?>
-                        <option value="<?= $stage['id'] ?>"><?= htmlspecialchars($stage['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <label>Act</label>
-                <select name="artist_id">
-                    <?php foreach ($artists as $artist): ?>
-                        <option value="<?= $artist['id'] ?>"><?= htmlspecialchars($artist['naam']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <label>Start</label>
-                <input type="time" name="start" value="10:00">
-                <label>Eind</label>
-                <input type="time" name="end" value="11:00">
-                <button type="submit">Toevoegen</button>
-            </form>
-        </div>
     </div>
 
     <div id="edit-map" class="cms-section">
         <button class="back-btn" onclick="showMenu()">← Terug</button>
         <h3>Festival Map</h3>
 
+        <div class="cms-box cms-add">
+            <h4>Nieuwe marker toevoegen</h4>
+            <form method="POST" class="cms-form">
+                <input type="hidden" name="action" value="add_marker">
+                <label>Stage</label>
+                <select name="stage_id">
+                    <?php foreach ($stages as $stage): ?>
+                        <option value="<?= $stage['id'] ?>"><?= htmlspecialchars($stage['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <label>Klik op de kaart voor X/Y</label>
+                <div class="marker-picker">
+                    <div class="marker-map" id="marker-map">
+                        <img src="assets/map/map.svg" id="marker-map-img" alt="Festival map" />
+                        <div class="marker-preview" id="marker-preview"></div>
+                    </div>
+                    <p>Klik ergens op de kaart om de X- en Y-coördinaten automatisch in te vullen.</p>
+                </div>
+                <label>X positie</label>
+                <input type="number" id="marker-x" name="x_coords" value="0">
+                <label>Y positie</label>
+                <input type="number" id="marker-y" name="y_coords" value="0">
+                <label>Afbeelding URL</label>
+                <input type="text" name="img" placeholder="assets/path/to/marker.png">
+                <label>Breedte</label>
+                <input type="number" name="width" value="30">
+                <label>Type</label>
+                <input type="text" name="types" placeholder="Marker type">
+                <button type="submit">Toevoegen</button>
+            </form>
+        </div>
         <div class="cms-box">
             <?php foreach ($markers as $marker): ?>
                 <form method="POST" class="cms-form">
@@ -340,30 +368,6 @@ $conn = null;
                 </form>
             <?php endforeach; ?>
         </div>
-
-        <div class="cms-box">
-            <h4>Nieuwe marker toevoegen</h4>
-            <form method="POST" class="cms-form">
-                <input type="hidden" name="action" value="add_marker">
-                <label>Stage</label>
-                <select name="stage_id">
-                    <?php foreach ($stages as $stage): ?>
-                        <option value="<?= $stage['id'] ?>"><?= htmlspecialchars($stage['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <label>X positie</label>
-                <input type="number" name="x_coords" value="0">
-                <label>Y positie</label>
-                <input type="number" name="y_coords" value="0">
-                <label>Afbeelding URL</label>
-                <input type="text" name="img" placeholder="assets/path/to/marker.png">
-                <label>Breedte</label>
-                <input type="number" name="width" value="30">
-                <label>Type</label>
-                <input type="text" name="types" placeholder="Marker type">
-                <button type="submit">Toevoegen</button>
-            </form>
-        </div>
     </div>
 </div>
 
@@ -386,6 +390,24 @@ $conn = null;
         const active = '<?= addslashes($activeSection) ?>';
         if (active) {
             showSection(active);
+        }
+
+        const markerImage = document.getElementById('marker-map-img');
+        const markerPreview = document.getElementById('marker-preview');
+        const xInput = document.getElementById('marker-x');
+        const yInput = document.getElementById('marker-y');
+
+        if (markerImage && markerPreview && xInput && yInput) {
+            markerImage.addEventListener('click', function (event) {
+                const rect = markerImage.getBoundingClientRect();
+                const x = Math.round(event.clientX - rect.left);
+                const y = Math.round(event.clientY - rect.top);
+                xInput.value = x;
+                yInput.value = y;
+                markerPreview.style.left = x + 'px';
+                markerPreview.style.top = y + 'px';
+                markerPreview.style.display = 'block';
+            });
         }
     });
 </script>

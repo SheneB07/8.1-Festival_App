@@ -16,7 +16,113 @@ body{
 
 .dark-mode{
   background-color: rgb(41, 41, 41);
-  color: white;
+  color: #f1f1f1;
+}
+
+body.dark-mode,
+.dark-mode {
+  background-color: #292929;
+  color: #f1f1f1;
+}
+
+.dark-mode body,
+.dark-mode .content,
+.dark-mode .cms-content,
+.dark-mode .cms-box,
+.dark-mode .panel-message,
+.dark-mode .marker-map,
+.dark-mode .modal,
+.dark-mode #modal-content,
+.dark-mode .artist-title,
+.dark-mode .artist-description,
+.dark-mode .artist-info,
+.dark-mode .header-column2,
+.dark-mode footer {
+  background-color: #2f2f2f;
+  color: #f1f1f1;
+}
+
+.dark-mode header {
+  background-color: #111;
+}
+
+.dark-mode footer {
+  background-color: #1f1f1f;
+}
+
+.dark-mode a,
+.dark-mode p,
+.dark-mode label,
+.dark-mode .cms-form input,
+.dark-mode .cms-form textarea,
+.dark-mode .cms-form select,
+.dark-mode .button-row button,
+.dark-mode .option-button,
+.dark-mode .day-switch a,
+.dark-mode .time-label,
+.dark-mode .stage-label,
+.dark-mode .stage,
+.dark-mode .grid-cell,
+.dark-mode .acts,
+.dark-mode .event {
+  color: #f1f1f1;
+}
+
+.dark-mode .cms-form input,
+.dark-mode .cms-form textarea,
+.dark-mode .cms-form select {
+  background: #3f3f3f;
+  border-color: #555;
+}
+
+.dark-mode .cms-box,
+.dark-mode .panel-message,
+.dark-mode .marker-map,
+.dark-mode .modal,
+.dark-mode #modal-content {
+  background: #333;
+}
+
+.dark-mode .button-row button {
+  background: #247BA0;
+}
+
+.dark-mode .button-row button.delete-button {
+  background: #c0392b;
+}
+
+.dark-mode .day-switch a {
+  background: #3f3f3f;
+  color: #f1f1f1;
+}
+
+.dark-mode .day-switch a.active {
+  background: #252525;
+}
+
+.dark-mode .schedule,
+.dark-mode .grid-cell,
+.dark-mode .acts {
+  background: #3a3a3a;
+}
+
+.dark-mode .stage,
+.dark-mode .stage-label,
+.dark-mode .time-header {
+  background: #444;
+}
+
+.dark-mode .event {
+  background: #5a5a5a;
+  color: #f9f9f9;
+}
+
+.dark-mode .time-label {
+  color: #d1d1d1;
+}
+
+.dark-mode .modal {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 header{
@@ -517,12 +623,21 @@ h4{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 20px;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .cms-section{
     display:none;
+    width: 100%;
+    max-width: 920px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 .cms-menu{
@@ -689,6 +804,54 @@ hr{
 .cms-form button.delete-button {
     background: #c0392b;
 }
+
+.cms-add {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto 20px;
+}
+
+.marker-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.marker-map {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    border: 1px solid #ccc;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.marker-map img {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: crosshair;
+}
+
+.marker-preview {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: rgba(240, 50, 40, 0.9);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    pointer-events: none;
+}
+
+.marker-picker p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
 .cms-box {
     border: 1px solid #ddd;
     padding: 18px;
@@ -697,6 +860,7 @@ hr{
     margin-bottom: 24px;
     width: 100%;
     max-width: 860px;
+    box-sizing: border-box;
 }
 .panel-message {
     padding: 14px 18px;
@@ -706,6 +870,36 @@ hr{
     color: #2d5d3b;
     margin-bottom: 18px;
     max-width: 860px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    #buttons-container {
+        width: 90%;
+        max-width: 760px;
+    }
+    .cms-form {
+        max-width: 100%;
+    }
+    .cms-box {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 780px) {
+    .cms-content {
+        padding: 16px;
+    }
+    .option-button,
+    #option-button {
+        width: 100%;
+    }
+    .button-row {
+        flex-direction: column;
+    }
+    .cms-form button {
+        width: 100%;
+    }
 }
 
 @media(max-width: 780px){
@@ -713,3 +907,49 @@ hr{
     width: 65%;
   }
 }
+
+/* Final dark-mode overrides to ensure schedule and UI switch correctly (live) */
+body.dark-mode .schedule,
+body.dark-mode .grid-cell,
+body.dark-mode .acts,
+body.dark-mode .cms-box,
+body.dark-mode .panel-message,
+body.dark-mode .marker-map,
+body.dark-mode .modal,
+body.dark-mode #modal-content,
+body.dark-mode .time-header,
+body.dark-mode .stage-label,
+body.dark-mode .stage,
+body.dark-mode .event,
+body.dark-mode .day-switch a {
+  background: #3a3a3a !important;
+  color: #e9e9e9 !important;
+}
+
+body.dark-mode .time-label,
+body.dark-mode .artist-description,
+body.dark-mode .artist-info {
+  color: #d1d1d1 !important;
+}
+
+body.dark-mode .cms-form input,
+body.dark-mode .cms-form textarea,
+body.dark-mode .cms-form select {
+  background: #333 !important;
+  border-color: #555 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-mode .button-row button {
+  background: #247BA0 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .button-row button.delete-button {
+  background: #c0392b !important;
+}
+
+/* ensure header/footer contrast */
+body.dark-mode header { background: #111 !important; }
+body.dark-mode footer { background: #111 !important; }
+

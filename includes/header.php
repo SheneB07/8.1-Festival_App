@@ -33,10 +33,15 @@ function switchLanguage() {
 
 function updateFlag() {
 
-    if(currentLanguage === "nl") {
+    const flag = document.getElementById('nl-flag');
+    if (!flag) return;
+    if (currentLanguage === "nl") {
         flag.src = "assets/nl-flag.svg";
+        flag.alt = "NL flag";
     } else {
         flag.src = "assets/uk-flag.svg";
+        flag.alt = "UK flag";
     }
 }
+document.addEventListener('DOMContentLoaded', updateFlag);
 </script>

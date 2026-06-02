@@ -49,10 +49,14 @@ try {
 <?php include("includes/header.php"); ?>
 
 <div class="content">
-
+    <button id="locate-btn" class="locate-btn">Locate me</button>
     <div id="map-box">
 
-        <div id="map-inner">
+    
+
+        
+
+        <div id="map-inner" data-lat1="" data-lon1="" data-lat2="" data-lon2="">
             <img src="assets/map/map.svg" id="map">
         </div>
 
