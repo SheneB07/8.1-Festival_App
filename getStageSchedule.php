@@ -18,7 +18,8 @@ $stmt = $conn->prepare("
         performances.day,
         performances.start,
         performances.end,
-        artists.naam AS artist
+        artists.naam AS artist,
+        artists.id AS artist_id
     FROM performances
     JOIN artists
         ON artists.id = performances.artist_id

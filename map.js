@@ -1,189 +1,158 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const mapInner = document.getElementById("map-inner");
+document.addEventListener("DOMContentLoaded", () => {
 
-    let scale = 1;
-    let posX = 0;
-    let posY = 0;
+    const mapWidth = 900;
+    const mapHeight = 500;
 
-    let isDragging = false;
-    let startX, startY;
-
-    mapInner.addEventListener("pointerdown", (e) => {
-        isDragging = true;
-
-        startX = e.clientX - posX;
-        startY = e.clientY - posY;
-
-        mapInner.setPointerCapture(e.pointerId);
+    const map = L.map("festival-map", {
+        crs: L.CRS.Simple,
+        minZoom: -2,
+        maxZoom: 3,
+        maxBoundsViscosity: 1.0
     });
 
-    mapInner.addEventListener("pointermove", (e) => {
-        if (!isDragging) return;
+    const bounds = [
+        [0, 0],
+        [mapHeight, mapWidth]
+    ];
 
-        posX = e.clientX - startX;
-        posY = e.clientY - startY;
+    L.imageOverlay("assets/map/map.svg", bounds).addTo(map);
 
-        updateTransform();
-    });
+    map.setMaxBounds(bounds);
+    map.fitBounds(bounds);
 
-    mapInner.addEventListener("pointerup", () => {
-        isDragging = false;
-    });
+    const mapBounds = {
+        lat1: 52.0,
+        lon1: 4.3,
+        lat2: 51.9,
+        lon2: 4.4
+    };
 
-    mapInner.addEventListener("pointercancel", () => {
-        isDragging = false;
-    });
+    function latLonToMap(lat, lon) {
+        const x = ((lon - mapBounds.lon1) / (mapBounds.lon2 - mapBounds.lon1)) * mapWidth;
+        const yRaw = ((lat - mapBounds.lat1) / (mapBounds.lat2 - mapBounds.lat1)) * mapHeight;
 
-    // ZOOM
-    document.getElementById("map-box").addEventListener("wheel", (e) => {
-        e.preventDefault();
-
-        scale += e.deltaY * -0.001;
-        scale = Math.min(Math.max(0.5, scale), 3);
-
-        updateTransform();
-    });
-
-    function updateTransform() {
-        mapInner.style.transform =
-            `translate(${posX}px, ${posY}px) scale(${scale})`;
-
-        updateMarkers();
+        return [mapHeight - yRaw, x];
     }
 
-    const markers = document.querySelectorAll(".marker");
+    // -------------------------
+    // USER LOCATION
+    // -------------------------
 
-    function updateMarkers() {
-        markers.forEach(marker => {
-            const x = parseFloat(marker.dataset.x);
-            const y = parseFloat(marker.dataset.y);
+    const userMarker = L.marker([0, 0], {
+        icon: L.icon({
+            iconUrl: "assets/map/user.png",
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        })
+    }).addTo(map);
 
-            const screenX = x * scale + posX;
-            const screenY = y * scale + posY;
+    function startLiveLocation() {
 
-            marker.style.left = screenX + "px";
-            marker.style.top = screenY + "px";
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.watchPosition((pos) => {
+
+            const coords = latLonToMap(
+                pos.coords.latitude,
+                pos.coords.longitude
+            );
+
+            userMarker.setLatLng(coords);
+
+        }, console.error, {
+            enableHighAccuracy: true,
+            maximumAge: 1000,
+            timeout: 10000
         });
     }
 
-    updateMarkers();
+    startLiveLocation();
 
-    // --- GPS / locate me ---
-    const markerLayer = document.getElementById("marker-layer");
-    const mapImg = document.getElementById("map");
-    const mapBox = document.getElementById("map-box");
+    // -------------------------
+    // MARKERS
+    // -------------------------
 
-    const gpsMarker = document.createElement("div");
-    gpsMarker.id = "gps-marker";
-    gpsMarker.style.display = "none";
-    markerLayer.appendChild(gpsMarker);
+    markers.forEach(marker => {
 
-    let watchId = null;
-    let gpsPos = { lat: null, lon: null, accuracy: 0, imgX: null, imgY: null };
+        const icon = L.icon({
+            iconUrl: marker.img,
+            iconSize: [marker.width, marker.width],
+            iconAnchor: [marker.width / 2, marker.width / 2]
+        });
 
-    function latLonToImageXY(lat, lon) {
-        const d = mapInner.dataset;
-        if (!d.lat1 || !d.lon1 || !d.lat2 || !d.lon2) return null;
+        const fixedY = mapHeight - marker.y_coords;
 
-        const lat1 = parseFloat(d.lat1);
-        const lon1 = parseFloat(d.lon1);
-        const lat2 = parseFloat(d.lat2);
-        const lon2 = parseFloat(d.lon2);
+        const leafletMarker = L.marker(
+            [fixedY, marker.x_coords],
+            { icon }
+        ).addTo(map);
 
-        if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) return null;
+        leafletMarker.on("click", async () => {
 
-        // fraction across the image
-        const fx = (lon - lon1) / (lon2 - lon1);
-        const fy = (lat - lat1) / (lat2 - lat1);
+            let html = "";
 
-        const imgW = mapImg.naturalWidth || mapImg.width;
-        const imgH = mapImg.naturalHeight || mapImg.height;
+            if (marker.types !== "stage") {
 
-        const x = fx * imgW;
-        const y = (1 - fy) * imgH; // y origin assumed top
+                switch (marker.types) {
 
-        return { x, y };
-    }
+                    case "toilet":
+                        html = `<h3>Toilets</h3><p>Restrooms available here.</p>`;
+                        break;
 
-    function updateGpsMarker() {
-        if (!gpsPos.lat) return;
+                    case "food":
+                        html = `<h3>Food</h3><p>Food stands located here.</p>`;
+                        break;
 
-        const xy = latLonToImageXY(gpsPos.lat, gpsPos.lon);
+                    case "info":
+                        html = `<h3>Info Point</h3><p>Get help and information here.</p>`;
+                        break;
 
-        if (xy) {
-            gpsPos.imgX = xy.x;
-            gpsPos.imgY = xy.y;
+                    default:
+                        html = `<h3>${marker.types}</h3>`;
+                }
 
-            const screenX = gpsPos.imgX * scale + posX;
-            const screenY = gpsPos.imgY * scale + posY;
+                mapModalContent.innerHTML = html;
+                modal.style.display = "block";
+                return;
+            }
 
-            gpsMarker.style.left = screenX + "px";
-            gpsMarker.style.top = screenY + "px";
-            gpsMarker.style.display = "block";
-            gpsMarker.setAttribute("data-accuracy", gpsPos.accuracy || 0);
-        } else {
-            // no mapping provided: show a small dot near the top-right of the map
-            const offsetRight = 40; // px from right edge
-            const offsetTop = 24; // px from top edge
-            gpsMarker.style.left = (mapBox.clientWidth - offsetRight) + "px";
-            gpsMarker.style.top = offsetTop + "px";
-            gpsMarker.style.display = "block";
-            gpsMarker.textContent = "";
-            gpsMarker.title = `${gpsPos.lat.toFixed(5)}, ${gpsPos.lon.toFixed(5)}`;
-            gpsMarker.setAttribute("data-accuracy", gpsPos.accuracy || 0);
-        }
-    }
+            try {
 
-    function startGeolocation() {
-        if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser.");
-            return;
-        }
+                const res = await fetch("getStageSchedule.php?id=" + marker.stage_id);
+                const data = await res.json();
 
-        if (watchId) return;
+                html = "";
 
-        watchId = navigator.geolocation.watchPosition(pos => {
-            gpsPos.lat = pos.coords.latitude;
-            gpsPos.lon = pos.coords.longitude;
-            gpsPos.accuracy = pos.coords.accuracy;
+                if (marker.stage_image) {
+                    html += `<img src="${marker.stage_image}" class="stage-image">`;
+                }
 
-            updateGpsMarker();
-        }, err => {
-            console.warn(err);
-        }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 });
+                html += `
+                    <h3>${marker.stage_name}</h3>
+                    <h3>Stage Schedule</h3>
+                `;
 
-        const btn = document.getElementById("locate-btn");
-        if (btn) btn.textContent = "Stop locating";
-    }
+                if (!data.length) {
+                    html += `<p>No performances found.</p>`;
+                } else {
+                    data.forEach(show => {
+                        html += `
+                            <div class="show-item">
+                                <div>${show.day}</div>
+                                <div>${show.start} - ${show.end}</div>
+                                <div><a class="stage-artist-link" href="music.php?artist_id=${show.artist_id}&day=${encodeURIComponent(show.day)}">${show.artist}</a></div>
+                            </div>
+                        `;
+                    });
+                }
 
-    function stopGeolocation() {
-        if (watchId) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-        }
-        gpsMarker.style.display = "none";
-        const btn = document.getElementById("locate-btn");
-        if (btn) btn.textContent = "Locate me";
-    }
+                mapModalContent.innerHTML = html;
+                modal.style.display = "block";
 
-    const locateBtn = document.getElementById("locate-btn");
-    if (locateBtn) {
-        locateBtn.addEventListener("click", () => {
-            if (!watchId) {
-                startGeolocation();
-            } else {
-                stopGeolocation();
+            } catch (err) {
+                console.error(err);
             }
         });
-    }
+    });
 
-    // keep gps marker updated when map moves/zooms
-    const originalUpdateTransform = updateTransform;
-    function wrappedUpdateTransform() {
-        originalUpdateTransform();
-        updateGpsMarker();
-    }
-
-    // replace updateTransform reference used elsewhere
-    updateTransform = wrappedUpdateTransform;
 });

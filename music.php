@@ -235,6 +235,19 @@ window.onclick = function(event) {
   }
 };
 
+function openArtistModalById(artistId) {
+  const targetBox = Array.from(boxes).find(box => box.dataset.id === artistId);
+  if (targetBox) {
+    targetBox.click();
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const artistIdParam = urlParams.get('artist_id');
+if (artistIdParam) {
+  openArtistModalById(artistIdParam);
+}
+
 document.querySelectorAll(".day-link").forEach(link => {
     link.textContent =
         currentLanguage === "nl"

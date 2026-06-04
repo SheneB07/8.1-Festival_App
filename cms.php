@@ -8,20 +8,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     try {
         switch ($_POST['action']) {
             case 'add_information':
-                $stmt = $conn->prepare("INSERT INTO informatie (titel, informatie) VALUES (?, ?)");
+                $stmt = $conn->prepare("INSERT INTO informatie (titel, informatie, titel_en, informatie_en) VALUES (?, ?, ?, ?)");
                 $stmt->execute([
                     $_POST['titel'] ?? '',
-                    $_POST['informatie'] ?? ''
+                    $_POST['informatie'] ?? '',
+                    $_POST['titel_en'] ?? '',
+                    $_POST['informatie_en'] ?? ''
                 ]);
                 header('Location: cms.php?section=edit-information');
                 exit;
 
             case 'save_information':
-                $stmt = $conn->prepare("UPDATE informatie SET titel = ?, informatie = ? WHERE id = ?");
+                $stmt = $conn->prepare("UPDATE informatie SET titel = ?, informatie = ?, titel_en = ?, informatie_en = ? WHERE id = ?");
                 $stmt->execute([
                     $_POST['titel'] ?? '',
                     $_POST['informatie'] ?? '',
-                    $_POST['id']
+                    $_POST['titel_en'] ?? '',
+                    $_POST['informatie_en'] ?? '',
                 ]);
                 header('Location: cms.php?section=edit-information');
                 exit;
@@ -33,15 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
                 exit;
 
             case 'add_news':
-                $stmt = $conn->prepare("INSERT INTO nieuws_meldingen (information) VALUES (?)");
-                $stmt->execute([$_POST['information'] ?? '']);
+                $stmt = $conn->prepare("INSERT INTO nieuws_meldingen (information, en_information) VALUES (?, ?)");
+                $stmt->execute([
+                    $_POST['information'] ?? '',
+                    $_POST['en_information'] ?? ''
+                ]);
                 header('Location: cms.php?section=edit-news');
                 exit;
 
             case 'save_news':
-                $stmt = $conn->prepare("UPDATE nieuws_meldingen SET information = ? WHERE information_id = ?");
+                $stmt = $conn->prepare("UPDATE nieuws_meldingen SET information = ?, en_information = ? WHERE information_id = ?");
                 $stmt->execute([
                     $_POST['information'] ?? '',
+                    $_POST['en_information'] ?? '',
                     $_POST['information_id']
                 ]);
                 header('Location: cms.php?section=edit-news');
@@ -83,6 +90,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
                 $stmt = $conn->prepare("DELETE FROM performances WHERE id = ? OR performance_id = ?");
                 $stmt->execute([$_POST['performance_id'], $_POST['performance_id']]);
                 header('Location: cms.php?section=edit-programma');
+                exit;
+
+            case 'add_artist':
+                $stmt = $conn->prepare("INSERT INTO artists (naam, naam_en, omschrijving, omschrijving_en, afbeelding, video, tekst, tekst_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([
+                    $_POST['naam'] ?? '',
+                    $_POST['naam_en'] ?? '',
+                    $_POST['omschrijving'] ?? '',
+                    $_POST['omschrijving_en'] ?? '',
+                    $_POST['afbeelding'] ?? '',
+                    $_POST['video'] ?? '',
+                    $_POST['tekst'] ?? '',
+                    $_POST['tekst_en'] ?? ''
+                ]);
+                header('Location: cms.php?section=edit-artists');
+                exit;
+
+            case 'save_artist':
+                $stmt = $conn->prepare("UPDATE artists SET naam = ?, naam_en = ?, omschrijving = ?, omschrijving_en = ?, afbeelding = ?, video = ?, tekst = ?, tekst_en = ? WHERE id = ?");
+                $stmt->execute([
+                    $_POST['naam'] ?? '',
+                    $_POST['naam_en'] ?? '',
+                    $_POST['omschrijving'] ?? '',
+                    $_POST['omschrijving_en'] ?? '',
+                    $_POST['afbeelding'] ?? '',
+                    $_POST['video'] ?? '',
+                    $_POST['tekst'] ?? '',
+                    $_POST['tekst_en'] ?? '',
+                    $_POST['id']
+                ]);
+                header('Location: cms.php?section=edit-artists');
+                exit;
+
+            case 'delete_artist':
+                $stmt = $conn->prepare("DELETE FROM artists WHERE id = ?");
+                $stmt->execute([$_POST['id']]);
+                header('Location: cms.php?section=edit-artists');
                 exit;
 
             case 'add_marker':
@@ -127,15 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     }
 }
 
-$informationStmt = $conn->prepare("SELECT id, titel, informatie FROM informatie ORDER BY id");
+$informationStmt = $conn->prepare("SELECT id, titel, informatie, titel_en, informatie_en FROM informatie ORDER BY id");
 $informationStmt->execute();
 $informationItems = $informationStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$newsStmt = $conn->prepare("SELECT information_id, information FROM nieuws_meldingen ORDER BY information_id");
+$newsStmt = $conn->prepare("SELECT information_id, information, en_information FROM nieuws_meldingen ORDER BY information_id");
 $newsStmt->execute();
 $newsItems = $newsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$artistStmt = $conn->prepare("SELECT id, naam FROM artists ORDER BY naam");
+$artistStmt = $conn->prepare("SELECT id, naam, naam_en, omschrijving, omschrijving_en, afbeelding, video, tekst, tekst_en FROM artists ORDER BY naam");
 $artistStmt->execute();
 $artists = $artistStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -185,6 +229,7 @@ $conn = null;
             <div class="option-button" onclick="showSection('edit-news')">Nieuws & meldingen</div>
             <div class="option-button" onclick="showSection('edit-information')">Festival informatie</div>
             <div class="option-button" onclick="showSection('edit-programma')">Optredingen programma</div>
+            <div class="option-button" onclick="showSection('edit-artists')">Artiesten</div>
             <div class="option-button" onclick="showSection('edit-map')">Map</div>
         </div>
     </div>
@@ -200,6 +245,8 @@ $conn = null;
                 <input type="text" name="titel" placeholder="Titel">
                 <label>Informatie</label>
                 <textarea name="informatie" placeholder="Informatie tekst"></textarea>
+                <label>Informatie (EN)</label>
+                <textarea name="informatie_en" placeholder="Information English"></textarea>
                 <button type="submit">Toevoegen</button>
             </form>
         </div>
@@ -211,6 +258,8 @@ $conn = null;
                 <input type="text" name="titel" value="<?= htmlspecialchars($info['titel']) ?>">
                 <label>Informatie</label>
                 <textarea name="informatie"><?= htmlspecialchars($info['informatie']) ?></textarea>
+                <label>Informatie (EN)</label>
+                <textarea name="informatie_en"><?= htmlspecialchars($info['informatie_en']) ?></textarea>
                 <div class="button-row">
                     <button type="submit">Opslaan</button>
                     <button type="submit" name="action" value="delete_information" class="delete-button">Verwijder</button>
@@ -228,6 +277,8 @@ $conn = null;
                 <input type="hidden" name="action" value="add_news">
                 <label>Nieuws</label>
                 <textarea name="information" placeholder="Nieuwe melding"></textarea>
+                <label>Nieuws (EN)</label>
+                <textarea name="en_information" placeholder="News English"></textarea>
                 <button type="submit">Toevoegen</button>
             </form>
         </div>
@@ -237,6 +288,8 @@ $conn = null;
                 <input type="hidden" name="information_id" value="<?= $item['information_id'] ?>">
                 <label>Nieuws</label>
                 <textarea name="information"><?= htmlspecialchars($item['information']) ?></textarea>
+                <label>Nieuws (EN)</label>
+                <textarea name="en_information"><?= htmlspecialchars($item['en_information']) ?></textarea>
                 <div class="button-row">
                     <button type="submit">Opslaan</button>
                     <button type="submit" name="action" value="delete_news" class="delete-button">Verwijder</button>
@@ -307,6 +360,62 @@ $conn = null;
                 </div>
             </form>
         <?php endforeach; ?>
+    </div>
+
+    <div id="edit-artists" class="cms-section">
+        <button class="back-btn" onclick="showMenu()">← Terug</button>
+        <h3>Artiesten</h3>
+        <div class="cms-box cms-add">
+            <h4>Nieuwe artiest toevoegen</h4>
+            <form method="POST" class="cms-form">
+                <input type="hidden" name="action" value="add_artist">
+                <label>Naam (NL)</label>
+                <input type="text" name="naam" placeholder="Naam Nederlands">
+                <label>Naam (EN)</label>
+                <input type="text" name="naam_en" placeholder="Name English">
+                <label>Omschrijving (NL)</label>
+                <textarea name="omschrijving" placeholder="Omschrijving Nederlands"></textarea>
+                <label>Omschrijving (EN)</label>
+                <textarea name="omschrijving_en" placeholder="Description English"></textarea>
+                <label>Informatie (NL)</label>
+                <textarea name="tekst" placeholder="Informatie Nederlands"></textarea>
+                <label>Informatie (EN)</label>
+                <textarea name="tekst_en" placeholder="Information English"></textarea>
+                <label>Afbeelding URL</label>
+                <input type="text" name="afbeelding" placeholder="assets/path/to/image.jpg">
+                <label>Video URL</label>
+                <input type="text" name="video" placeholder="Video URL">
+                <button type="submit">Toevoegen</button>
+            </form>
+        </div>
+        <div class="cms-box">
+            <?php foreach ($artists as $artist): ?>
+                <form method="POST" class="cms-form">
+                    <input type="hidden" name="action" value="save_artist">
+                    <input type="hidden" name="id" value="<?= $artist['id'] ?>">
+                    <label>Naam (NL)</label>
+                    <input type="text" name="naam" value="<?= htmlspecialchars($artist['naam']) ?>">
+                    <label>Naam (EN)</label>
+                    <input type="text" name="naam_en" value="<?= htmlspecialchars($artist['naam_en']) ?>">
+                    <label>Omschrijving (NL)</label>
+                    <textarea name="omschrijving"><?= htmlspecialchars($artist['omschrijving']) ?></textarea>
+                    <label>Omschrijving (EN)</label>
+                    <textarea name="omschrijving_en"><?= htmlspecialchars($artist['omschrijving_en']) ?></textarea>
+                    <label>Informatie (NL)</label>
+                    <textarea name="tekst"><?= htmlspecialchars($artist['tekst']) ?></textarea>
+                    <label>Informatie (EN)</label>
+                    <textarea name="tekst_en"><?= htmlspecialchars($artist['tekst_en']) ?></textarea>
+                    <label>Afbeelding URL</label>
+                    <input type="text" name="afbeelding" value="<?= htmlspecialchars($artist['afbeelding']) ?>">
+                    <label>Video URL</label>
+                    <input type="text" name="video" value="<?= htmlspecialchars($artist['video']) ?>">
+                    <div class="button-row">
+                        <button type="submit">Opslaan</button>
+                        <button type="submit" name="action" value="delete_artist" class="delete-button">Verwijder</button>
+                    </div>
+                </form>
+            <?php endforeach; ?>
+        </div>
     </div>
 
     <div id="edit-map" class="cms-section">

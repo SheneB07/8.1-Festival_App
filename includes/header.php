@@ -12,11 +12,25 @@
     </header>
 
     <script>
-        function switchMode(){
-            var element = document.body;
-            element.classList.toggle("dark-mode");
-        };
-        
+        let currentTheme = localStorage.getItem("theme") || "light";
+
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+            localStorage.setItem("theme", theme);
+            currentTheme = theme;
+        }
+
+        function switchMode() {
+            applyTheme(currentTheme === "dark" ? "light" : "dark");
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            applyTheme(currentTheme);
+        });
     </script>
     <script>
 
