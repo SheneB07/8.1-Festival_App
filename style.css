@@ -26,6 +26,11 @@ body.dark-mode,
   color: #f1f1f1;
 }
 
+.dark-mode #information-box{
+  background: #3a3a3a;
+  color: white;
+}
+
 .dark-mode body,
 .dark-mode .content,
 .dark-mode .cms-content,
@@ -39,6 +44,10 @@ body.dark-mode,
 .dark-mode .artist-info {
   background-color: #2f2f2f;
   color: #f1f1f1;
+}
+
+.dark-mode .panel{
+  background-color: #252525;
 }
 
 .dark-mode header {
@@ -298,7 +307,7 @@ h3{
 
 /*location.php*/
 #map-box{
-    width: 80vw;
+    width: 50%;
     height: 510px;
     border: solid 2px black;
     background-color: #3c824a;
@@ -363,6 +372,18 @@ h3{
     background: white;
     box-shadow: 0 2px 10px rgba(0,0,0,.25);
     cursor: pointer;
+}
+
+@media(max-width: 780px){
+  #map-box{
+    width: 80vw;
+    height: 510px;
+  }
+
+  #map{
+    width: 875px;
+    height: auto;
+  }
 }
 
 .map-modal {
@@ -477,6 +498,7 @@ h3{
   font-size: 110%;
   font-family: "Sansation";
   border-radius: 10px;
+  transition: 0.4s;
   /* box-shadow: 3px 3px 3px 3px #727272; */
 }
 
