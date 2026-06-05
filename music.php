@@ -18,7 +18,7 @@ function timeToPixels($time) {
   
 
   $minutes = ($current - $startOfDay) / 60;
-  return $minutes * 2; // 1 min = 2px
+  return $minutes * 2; 
 }
 ?>
 
@@ -58,7 +58,7 @@ $stagesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 $stages = [];
-$rowIndex = 2; // row 1 = time header
+$rowIndex = 2; 
 
 foreach ($stagesData as $stage) {
   $stages[$stage['id']] = [

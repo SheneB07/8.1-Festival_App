@@ -42,7 +42,7 @@ function switchLanguage() {
 
     localStorage.setItem("language", currentLanguage);
 
-    location.reload(); // THIS is required
+    location.reload();
 }
 
 function updateFlag() {

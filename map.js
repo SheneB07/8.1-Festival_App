@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     L.imageOverlay("assets/map/map.svg", bounds).addTo(map);
 
-    map.setMaxBounds(bounds);
+    
     map.fitBounds(bounds);
 
     const mapBounds = {
@@ -29,14 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function latLonToMap(lat, lon) {
         const x = ((lon - mapBounds.lon1) / (mapBounds.lon2 - mapBounds.lon1)) * mapWidth;
-        const yRaw = ((lat - mapBounds.lat1) / (mapBounds.lat2 - mapBounds.lat1)) * mapHeight;
+        const y = ((lat - mapBounds.lat1) / (mapBounds.lat2 - mapBounds.lat1)) * mapHeight;
 
-        return [mapHeight - yRaw, x];
+        return [y, x];
     }
 
-    // -------------------------
-    // USER LOCATION
-    // -------------------------
+    //Location
 
     const userMarker = L.marker([0, 0], {
         icon: L.icon({
@@ -68,9 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startLiveLocation();
 
-    // -------------------------
-    // MARKERS
-    // -------------------------
+   //Markers
 
     markers.forEach(marker => {
 
